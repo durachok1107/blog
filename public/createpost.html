@@ -1,0 +1,114 @@
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
+        <title>Коллективный блог</title>
+		<style type="text/css">	
+		</style> 
+    </head>
+    <body>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<div id="createpost">
+			<a v-bind:href="serverName+'/main'"><img v-bind:src="serverName+'/index.jpg'"></a>
+			<div v-if="user.key">{{user.login}}<button v-on:click="exit">Выйти</button></div>
+			<form v-on:submit.prevent="savepost">
+				<label for="name">Заголовок</label>
+				<input v-model="post.name" id="name" placeholder="Введите название">
+				<label for="tags">Тэги</label>
+				<input v-model="post.tags" id="tags" placeholder="Введите ключевые слова через #">
+				<p>Текст поста</p>
+				<textarea v-model="post.body" placeholder="Введите текст"></textarea>
+				<button v-bind:disabled="!post.name||!post.body">Сохранить</button>
+			</form>
+		</div>
+	
+	<script type="text/javascript">
+		var vm = new Vue({
+			el: '#createpost',
+			data:{
+				user:{
+					login:'',
+					id:'',
+					key:''
+				},
+				post:{
+					postId:'',
+					name:'',
+					body:'',
+					tags:'',
+					postTime:'',
+					userId:'',
+					userLogin: ''
+				},
+				serverName:'http://localhost:5000'
+			},
+			methods: {
+				exit: function () {
+					if(this.user.key!=localStorage.getItem('BlogUserKey')){
+						document.location.href = vm.serverName+'/';
+					}
+					else {
+						axios.defaults.headers.common = { 'Authorization': this.user.key }; 
+						axios.get(this.serverName+'/exit')
+							.then(function (response) {
+								localStorage.removeItem('BlogUserKey');
+								document.location.href = vm.serverName+'/';
+							})
+							.catch(function (error) {
+								alert('Ошибка! Сервер не отвечает');
+								document.location.href = vm.serverName+'/';
+							})
+					}
+				},
+				savepost: function () {
+					if(this.user.key!=localStorage.getItem('BlogUserKey')){
+						document.location.href = vm.serverName+'/';
+					}
+					else {
+						axios.defaults.headers.common = { 'Authorization': this.user.key }; 
+						axios.post(this.serverName+'/savepost', this.post)
+							.then(function (response) {
+								document.location.href = vm.serverName+'/main';
+							})
+							.catch(function (error) {
+								alert('Ошибка! Сервер не отвечает');
+							})
+					}
+				}
+			},
+			created: function () {
+				this.user.key=localStorage.getItem('BlogUserKey');
+				if(this.user.key){
+					axios.defaults.headers.common = { 'Authorization': this.user.key }; 
+					axios.get(this.serverName+'/giveme')
+						.then(function (response) {
+							if(response.data==1){
+								document.location.href = vm.serverName+'/';
+							}
+							else {
+								vm.user.login=response.data.user_login;
+								vm.user.id=response.data.user_id;
+							}
+						})
+						.catch(function (error) {
+							alert('Ошибка получения данных о пользователе!');
+						})
+				}
+				else {
+					document.location.href = vm.serverName+'/';
+				}
+				/*//поулчить список постов
+				this.post={
+					postId:1,
+					name:'Первый не успел',
+					body:'Первый пост который я написал',
+					tags:'#первый #1из1',
+					postTime:'11:35 28.07.2018',
+					userId:2,
+					userLogin: 'durachok'
+				};*/
+			}
+		})
+	</script>
+	</body>
+</html>

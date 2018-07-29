@@ -1,0 +1,31 @@
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
+        <title>Коллективный блог</title>
+		<style type="text/css">	
+		</style> 
+    </head>
+    <body>
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		Добро пожаловать в коллективный блог
+		<div id="welcome">
+			<button v-on:click="login">Авторизация</button>
+			<button v-on:click="sign">Регистрация</button>
+		</div>
+	
+	<script type="text/javascript">
+		var serverName='http://localhost:5000'
+		var vm = new Vue({
+			el: '#welcome',
+			methods: {
+				login: function () {
+					document.location.href = serverName+'/login';
+				},
+				sign: function () {
+					document.location.href = serverName+'/sign';
+				}
+			}
+		})
+	</script>
+	</body>
+</html>

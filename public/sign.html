@@ -1,0 +1,78 @@
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
+        <title>Коллективный блог</title>
+		<style type="text/css">	
+		</style> 
+    </head>
+    <body>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<div id="sign">
+			<a v-bind:href="serverName+'/'"><img v-bind:src="serverName+'/index.jpg'"></a>
+			Регистрация
+			<form v-on:submit.prevent="sign">
+				<label for="login">Логин</label>
+				<input v-model="newUser.login" id="login" placeholder="Введите логин">
+				<label for="email">E-mail</label>
+				<input v-model="newUser.email" id="email" placeholder="Введите e-mail (необязательно)">
+				<label for="password">Пароль</label>
+				<input v-model="newUser.password" id="password" placeholder="Введите пароль">
+				<div v-show="coincide">Пароли не совпадают</div>
+				<label for="confirm">Пароль</label>
+				<input v-model="newUser.confirm" id="confirm" placeholder="Повторите пароль">
+				<button v-bind:disabled="!permission">Регистрация</button>
+			</form>
+		</div>
+	
+	<script type="text/javascript">
+		var vm = new Vue({
+			el: '#sign',
+			data:{
+				newUser:{
+					login:'',
+					email:'',
+					password:'',
+					confirm:'',
+				},
+				serverName:'http://localhost:5000'
+			},
+			computed: {
+				permission: function () {
+					if(this.newUser.login!=''&&this.newUser.password!=''&&this.newUser.confirm!=''&&!vm.coincide){
+						return true;
+					}
+					else {
+						return false;
+					}
+				},
+				coincide: function () {
+					if(this.newUser.password!=''&&this.newUser.confirm!=''&&this.newUser.password!=this.newUser.confirm){
+						return true;
+					}
+					else {
+						return false;
+					}
+				}
+			},
+			methods: {
+				sign: function () {
+					axios.post(this.serverName+'/signup',this.newUser)
+						.then(function (response) {
+							if(response.data==1){
+								alert('Регитрация не выполнена. Пользователь с таким логином или почтой уже существует');
+							}
+							else if (response.data==0){
+								alert('Регитрация прошла успешно. Используйте свои данные для входа');
+								document.location.href = vm.serverName+'/login';
+							}
+						})
+						.catch(function (error) {
+							alert('Ошибка! Попробуйте провести регистрацию позже');
+						})
+				}
+			}
+		})
+	</script>
+	</body>
+</html>

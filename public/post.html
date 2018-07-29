@@ -1,0 +1,200 @@
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
+        <title>Коллективный блог</title>
+		<style type="text/css">
+		.postbody {
+			white-space: pre; /* Учитываются все пробелы и переносы */ 
+		} 		
+		</style> 
+    </head>
+    <body>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<div id="post">
+			<a v-bind:href="serverName+'/main'"><img v-bind:src="serverName+'/index.jpg'"></a>
+			<div v-if="!user.key"><button v-on:click="login">Войти</button></div>
+			<div v-else="">{{user.login}}<button v-on:click="exit">Выйти</button></div>
+			<table>
+				<tr>
+					<td>
+						<a v-bind:href="serverName+'/user/'+post.userid"><p>{{post.userlogin}}</p></a>
+						<p>{{post.posttime.split('T')[1].slice(0,8)}}</p>
+						<p>{{post.posttime.split('T')[0]}}</p>
+						<template v-if="post.userid==user.id">
+							<p><button v-on:click="updatePost(post.postid)">Редактировать</button></p>
+							<p><button v-on:click="deletePost(post.postid)">Удалить</button></p>
+						</template>
+					</td>
+					<td>
+						<h3>{{post.name}}</h3>
+						<p><i>{{post.tags}}</i></p>
+						<p class="postbody">{{post.body}}</p>
+						<textarea v-model="post.body" placeholder="Введите комментарий"></textarea>
+					</td>
+				</tr>
+			</table>
+			<table>
+				<tr v-for="comment in comments">
+					<td>
+						<a v-bind:href="serverName+'/user/'+comment.userid"><p>{{comment.userlogin}}</p></a>
+						<p>{{comment.commenttime.split('T')[1].slice(0,8)}}</p>
+						<p>{{comment.commenttime.split('T')[0]}}</p>
+						<p v-if="post.userid==user.id"><button v-on:click="deleteComment(comment.commentid)">Удалить</button></p>
+					</td>
+					<td>
+						<p>{{comment.body}}</p>
+					</td>
+				</tr>
+			</table>
+			<form v-on:submit.prevent="comment" v-if="user.key">
+				<p>Оставить комментарий</p>
+				<textarea v-model="newmessage" placeholder="Введите комментарий"></textarea>
+				<button v-bind:disabled="!newmessage">Отправить</button>
+			</form>
+		</div>
+	
+	<script type="text/javascript">
+		var vm = new Vue({
+			el: '#post',
+			data:{
+				user:{
+					login:'',
+					id:'',
+					key:''
+				},
+				post:{
+					postid:'',
+					name:'',
+					body:'',
+					tags:'',
+					posttime:'',
+					userid:'',
+					userlogin: ''
+				},
+				newmessage:'',
+				comments:[],
+				serverName:'http://localhost:5000'
+			},
+			methods: {
+				login: function () {
+					document.location.href = this.serverName+'/login';
+				},
+				exit: function () {
+					if(this.user.key!=localStorage.getItem('BlogUserKey')){
+						document.location.href = vm.serverName+'/';
+					}
+					else {
+						axios.defaults.headers.common = { 'Authorization': this.user.key }; 
+						axios.get(this.serverName+'/exit')
+							.then(function (response) {
+								localStorage.removeItem('BlogUserKey');
+								document.location.href = vm.serverName+'/';
+							})
+							.catch(function (error) {
+								alert('Ошибка! Сервер не отвечает');
+								document.location.href = vm.serverName+'/';
+							})
+					}
+				},
+				updatePost: function (postId) {
+					document.location.href = this.serverName+'/updatepost/'+postId;
+				},
+				deletePost: function (postId) {
+					if(this.user.key!=localStorage.getItem('BlogUserKey')){
+						document.location.href = vm.serverName+'/';
+					}
+					else {
+						axios.defaults.headers.common = { 'Authorization': this.user.key }; 
+						axios.delete(this.serverName+'/delpost/'+postId)
+							.then(function (response) {
+								document.location.href = vm.serverName+'/main';
+							})
+							.catch(function (error) {
+								alert('Ошибка! Сервер не отвечает');
+								document.location.href = vm.serverName+'/';
+							})
+					}
+				},
+				deleteComment: function (commentId) {
+					if(this.user.key!=localStorage.getItem('BlogUserKey')){
+						document.location.href = vm.serverName+'/';
+					}
+					else {
+						axios.defaults.headers.common = { 'Authorization': this.user.key }; 
+						axios.delete(this.serverName+'/delcomment/'+commentId)
+							.then(function (response) {
+								axios.get(vm.serverName+'/getcomments/'+vm.post.postid)
+									.then(function (response) {
+										vm.comments=response.data;
+									})
+									.catch(function (error) {
+										alert('Ошибка получения комментариев!');
+									});
+							})
+							.catch(function (error) {
+								alert('Ошибка! Сервер не отвечает');
+								document.location.href = vm.serverName+'/';
+							})
+					}
+				},
+				comment: function () {
+					if(this.user.key!=localStorage.getItem('BlogUserKey')){
+						document.location.href = vm.serverName+'/';
+					}
+					else {
+						axios.defaults.headers.common = { 'Authorization': this.user.key }; 
+						axios.post(this.serverName+'/savecomment', { postid:this.post.postid, body:this.newmessage })
+							.then(function (response) {
+								vm.newmessage='';
+								axios.get(vm.serverName+'/getcomments/'+vm.post.postid)
+									.then(function (response) {
+										vm.comments=response.data;
+									})
+									.catch(function (error) {
+										alert('Ошибка получения комментариев!');
+									});
+							})
+							.catch(function (error) {
+								alert('Ошибка! Сервер не отвечает');
+							})
+					}
+				}
+			},
+			created: function () {
+				this.user.key=localStorage.getItem('BlogUserKey');
+				if(this.user.key){
+					axios.defaults.headers.common = { 'Authorization': this.user.key }; 
+					axios.get(this.serverName+'/giveme')
+						.then(function (response) {
+							if(response.data==1){
+								document.location.href = vm.serverName+'/';
+							}
+							else {
+								vm.user.login=response.data.user_login;
+								vm.user.id=response.data.user_id;
+							}
+						})
+						.catch(function (error) {
+							alert('Ошибка получения данных о пользователе!');
+						})
+				};
+				axios.get(this.serverName+'/getpost/'+window.location.pathname.split('/')[2])
+						.then(function (response) {
+							vm.post=response.data;
+						})
+						.catch(function (error) {
+							alert('Ошибка получения поста!');
+						});
+				axios.get(this.serverName+'/getcomments/'+window.location.pathname.split('/')[2])
+						.then(function (response) {
+							vm.comments=response.data;
+						})
+						.catch(function (error) {
+							alert('Ошибка получения комментариев!');
+						});
+			}
+		})
+	</script>
+	</body>
+</html>

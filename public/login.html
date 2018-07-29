@@ -1,0 +1,63 @@
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
+        <title>Коллективный блог</title>
+		<style type="text/css">	
+		</style> 
+    </head>
+    <body>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<div id="log">
+		<a v-bind:href="serverName+'/'"><img v-bind:src="serverName+'/index.jpg'"></a>
+			Авторизация
+			<form v-on:submit.prevent="login">
+				<label for="login">Логин</label>
+				<input v-model="user.login" id="login" placeholder="Введите логин (E-mail)">
+				<label for="password">Пароль</label>
+				<input v-model="user.password" id="password" placeholder="Введите пароль">
+				<button v-bind:disabled="!permission">Войти</button>
+			</form>
+		</div>
+	
+	<script type="text/javascript">
+		var vm = new Vue({
+			el: '#log',
+			data:{
+				user:{
+					login:'',
+					password:''
+				},
+				serverName:'http://localhost:5000'
+			},
+			computed: {
+				permission: function () {
+					if(this.user.login!=''&&this.user.password!=''){
+						return true;
+					}
+					else {
+						return false;
+					}
+				}
+			},
+			methods: {
+				login: function () {
+					axios.post(this.serverName+'/getin',this.user)
+						.then(function (response) {
+							if(response.data==1){
+								alert('Вход не выполнен! Пользователя не существует');
+							}
+							else {
+								localStorage.setItem('BlogUserKey', response.data);
+								document.location.href = vm.serverName+'/main';
+							}
+						})
+						.catch(function (error) {
+							alert('Ошибка! Попробуйте провести регистрацию позже');
+						})
+				}
+			}
+		})
+	</script>
+	</body>
+</html>
