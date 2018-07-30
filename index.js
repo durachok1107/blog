@@ -3,6 +3,8 @@ var bodyParser = require("body-parser");
 const { Client } = require("pg");
 var jwt = require('jsonwebtoken');
 
+const PORT = process.env.PORT || 5000;
+
 var secretKey = 'superSecretKeyBlog';
 
 const pool = new Client({
@@ -252,4 +254,4 @@ app.post("/updatepost/", jsonParser, function (req, res) {
 	});
 });
 
-app.listen(5000, () => console.log(`Listening on 5000`));
+app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
