@@ -3,23 +3,53 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
         <title>Коллективный блог</title>
 		<style type="text/css">	
+			textarea {
+				resize: vertical;
+			}
+			.logbutton {
+				margin-right:5%
+			}
 		</style> 
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     </head>
     <body>
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 		<div id="createpost">
-			<a v-bind:href="serverName+'/main'"><img v-bind:src="serverName+'/index.jpg'"></a>
-			<div v-if="user.key">{{user.login}}<button v-on:click="exit">Выйти</button></div>
-			<form v-on:submit.prevent="savepost">
-				<label for="name">Заголовок</label>
-				<input v-model="post.name" id="name" placeholder="Введите название">
-				<label for="tags">Тэги</label>
-				<input v-model="post.tags" id="tags" placeholder="Введите ключевые слова через #">
-				<p>Текст поста</p>
-				<textarea v-model="post.body" placeholder="Введите текст"></textarea>
-				<button v-bind:disabled="!post.name||!post.body">Сохранить</button>
-			</form>
+			<div class="text-center">
+				<a v-bind:href="serverName+'/main'"><img v-bind:src="serverName+'/index.jpg'"></a>
+			</div>
+			<div class="text-right">
+				<div class="well">
+					<div class="row" v-if="user.key">
+						<a v-bind:href="serverName+'/user/'+user.id" class="lead">{{user.login}}</a>
+						<button v-on:click="exit" class="btn btn-default logbutton">Выйти</button>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-2">
+			</div>
+			<div class="panel panel-default col-sm-8">
+				<div class="panel-body">
+					<form class="form-horizontal" v-on:submit.prevent="savepost">
+						<div class="form-group">
+							<label for="name" class="control-label">Заголовок</label>
+							<input v-model="post.name" id="name" class="form-control" placeholder="Введите название">
+						</div>
+						<div class="form-group">
+							<label for="tags" class="control-label">Тэги</label>
+							<input v-model="post.tags" id="tags" class="form-control" placeholder="Введите ключевые слова через пробел">
+						</div>
+						<div class="form-group">
+							<label for="area" class="control-label">Текст поста</label>
+							<textarea v-model="post.body" id="area" placeholder="Введите текст" class="form-control" rows="8"></textarea>
+						</div>
+						<div class="form-group text-center">
+							<button v-bind:disabled="!post.name||!post.body" class="btn btn-success btn-lg">Сохранить</button>
+						</div>
+					</form>
+				</div>
+			</div>
 		</div>
 	
 	<script type="text/javascript">
@@ -95,18 +125,8 @@
 						})
 				}
 				else {
-					document.location.href = vm.serverName+'/';
+					document.location.href = this.serverName+'/';
 				}
-				/*//поулчить список постов
-				this.post={
-					postId:1,
-					name:'Первый не успел',
-					body:'Первый пост который я написал',
-					tags:'#первый #1из1',
-					postTime:'11:35 28.07.2018',
-					userId:2,
-					userLogin: 'durachok'
-				};*/
 			}
 		})
 	</script>

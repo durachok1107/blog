@@ -3,41 +3,110 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
         <title>Коллективный блог</title>
 		<style type="text/css">	
-		.postbody {
-			white-space: pre; /* Учитываются все пробелы и переносы */ 
-		} 
+			.postbody {
+				white-space: pre; /* Учитываются все пробелы и переносы */ 
+			} 
+			.logbutton {
+				margin-right:5%
+			}
 		</style> 
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     </head>
     <body>
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 		<div id="user">
-			<a v-bind:href="serverName+'/main'"><img v-bind:src="serverName+'/index.jpg'"></a>
-			<div v-if="!user.key"><button v-on:click="login">Войти</button></div>
-			<div v-else="">{{user.login}}<button v-on:click="exit">Выйти</button></div>
-			<p>Пользователь: {{displayUser.login}}</p>
-			<p>E-mail: {{displayUser.email}}</p>
-			<p>Дата регистрации: {{displayUser.signtime}}</p>
-			<p>Количество постов: {{posts.length}}</p>
-			<h3>Посты пользователя</h3>
-			<table>
-				<tr v-for="post in posts">
-					<td>
-						<p>{{post.userlogin}}</p>
-						<p>{{post.posttime.split('T')[1].slice(0,8)}}</p>
-						<p>{{post.posttime.split('T')[0]}}</p>
-						<template v-if="post.userid==user.id">
-							<p><button v-on:click="updatePost(post.postid)">Редактировать</button></p>
-							<p><button v-on:click="deletePost(post.postid)">Удалить</button></p>
-						</template>
-					</td>
-					<td>
-						<a v-bind:href="serverName+'/post/'+post.postid"><h3>{{post.name}}</h3></a>
-						<p><i>{{post.tags}}</i></p>
-						<p class="postbody">{{post.body}}</p>
-					</td>
-				</tr>
-			</table>
+			<div class="text-center">
+				<a v-bind:href="serverName+'/main'"><img v-bind:src="serverName+'/index.jpg'"></a>
+			</div>
+			<div class=" text-right">
+				<div class="well">
+					<div class="row" v-if="!user.key">
+						<button v-on:click="login" class="btn btn-default logbutton">Войти</button>
+					</div>
+					<div class="row" v-else>
+						<a v-bind:href="serverName+'/user/'+user.id" class="lead">{{user.login}}</a>
+						<button v-on:click="exit" class="btn btn-default logbutton">Выйти</button>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-3">
+				</div>
+				<div class="panel panel-default col-md-6">
+					<div class="panel-body">
+						<form class="form-horizontal">
+							<div class="form-group">
+								<label class="col-sm-4 control-label">Пользователь:</label>
+								<div class="col-sm-8">
+									<p class="form-control-static">{{displayUser.login}}</p>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label">E-mail:</label>
+								<div class="col-sm-8">
+									<p class="form-control-static">{{displayUser.email}}</p>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label">Дата регистрации:</label>
+								<div class="col-sm-8">
+									<p class="form-control-static">{{displayUser.signtime.split('T')[0]}} {{displayUser.signtime.split('T')[1].slice(0,5)}}</p>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label">Количество постов:</label>
+								<div class="col-sm-8">
+									<p class="form-control-static"><span class="badge">{{posts.length}}</span></p>
+								</div>
+							</div>
+						</form>	
+					</div>
+				</div>
+				<div class="col-md-3">
+				</div>
+			</div>
+
+			<h2 class="text-center">Посты пользователя</h2>
+			
+			<div v-for="post in posts" class="row">
+				<div class="col-md-2">
+				</div>
+				<div class="panel panel-default col-md-8">
+					<div class="panel-body">
+						<div class="col-md-3">
+								<p style="margin-top:10%"><strong>{{post.userlogin}}</strong></p>
+								<p><cite>{{post.posttime.split('T')[0]}}</cite></p>
+								<p><cite>{{post.posttime.split('T')[1].slice(0,5)}}</cite></p>
+								<template v-if="post.userid==user.id">
+									<p><button v-on:click="updatePost(post.postid)" class="btn btn-warning">
+										<span class="glyphicon glyphicon-pencil"></span>
+									</button>
+									<button v-on:click="deletePost(post.postid)" class="btn btn-danger">
+										<span class="glyphicon glyphicon-trash"></span>
+									</button>
+									</p>
+								</template>
+						</div>
+						<div class="panel panel-default col-md-9">
+							<div class="panel-heading">
+								<a v-bind:href="serverName+'/post/'+post.postid"><h3 class="panel-title"><strong>{{post.name}}</strong></h3></a>
+							</div>
+							<div class="panel-body">
+								<p>
+									<span v-for="tag in post.tags.split(' ')">
+										<span class="label label-info"><i>#{{tag}}</i></span>
+										<span> </span>
+									</span>
+								</p>
+								<p class="postbody">{{post.body}}</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-2">
+				</div>
+			</div>
 		</div>
 	
 	<script type="text/javascript">
@@ -53,7 +122,7 @@
 					id:'',
 					login:'',
 					email:'',
-					signtime:''
+					signtime:'0000-00-00T00:00:00.00'
 				},
 				posts:[],
 				serverName:'http://localhost:5000'
@@ -126,7 +195,6 @@
 				axios.get(this.serverName+'/getuser/'+window.location.pathname.split('/')[2])
 						.then(function (response) {
 							vm.displayUser=response.data;
-							vm.displayUser.signtime=vm.displayUser.signtime.slice(0,10);
 						})
 						.catch(function (error) {
 							alert('Ошибка получения данных о пользователе!');
@@ -138,33 +206,6 @@
 				.catch(function (error) {
 					alert('Ошибка получения постов пользователя!');
 				})
-				/*//получить просматриваемого пользователя
-				this.displayUser={
-					login:'qwerty',
-					email:'qwerty@mail.ru',
-					signtime:'28.07.2018'
-				},*/
-				//поулчить список постов
-				/*this.posts=[
-					{
-						postId:2,
-						name:'Первый не успел',
-						body:'Первый пост который я написал',
-						tags:'#первый #1из1',
-						postTime:'11:35 28.07.2018',
-						userId:2,
-						userLogin: 'qwerty'
-					},
-					{
-						postId:4,
-						name:'Я и не старался',
-						body:'Первый пост который я написал',
-						tags:'#первый #1из1',
-						postTime:'11:39 28.07.2018',
-						userId:2,
-						userLogin: 'qwerty'
-					}
-				];*/
 			}
 		})
 	</script>

@@ -4,22 +4,38 @@
         <title>Коллективный блог</title>
 		<style type="text/css">	
 		</style> 
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     </head>
     <body>
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 		<div id="log">
-		<a v-bind:href="serverName+'/'"><img v-bind:src="serverName+'/index.jpg'"></a>
-			Авторизация
-			<form v-on:submit.prevent="login">
-				<label for="login">Логин</label>
-				<input v-model="user.login" id="login" placeholder="Введите логин (E-mail)">
-				<label for="password">Пароль</label>
-				<input v-model="user.password" id="password" placeholder="Введите пароль">
-				<button v-bind:disabled="!permission">Войти</button>
-			</form>
+			<div class="text-center">
+				<a v-bind:href="serverName+'/'"><img v-bind:src="serverName+'/index.jpg'"></a>
+			</div>
+			<div class="text-center">
+				<h1>Авторизация</h1>
+			</div>
+			<div class="container text-center">
+				<form v-on:submit.prevent="login" class="form-horizontal">
+					<div class="form-group">
+						<label for="login" class="col-sm-4 control-label">Логин</label>	
+						<div class="col-sm-4">
+							<input v-model="user.login" id="login" class="form-control" placeholder="Введите логин (E-mail)">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="password" class="col-sm-4 control-label">Пароль</label>
+						<div class="col-sm-4">
+							<input type="password" v-model="user.password" class="form-control" id="password" placeholder="Введите пароль">
+						</div>
+					</div>
+					<div class="form-group">
+						<button v-bind:disabled="!permission" class="btn btn-default btn-lg">Войти</button>
+					</div>
+				</form>
+			</div>
 		</div>
-	
 	<script type="text/javascript">
 		var vm = new Vue({
 			el: '#log',

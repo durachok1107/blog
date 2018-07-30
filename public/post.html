@@ -3,55 +3,118 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
         <title>Коллективный блог</title>
 		<style type="text/css">
-		.postbody {
-			white-space: pre; /* Учитываются все пробелы и переносы */ 
-		} 		
+			.postbody {
+				white-space: pre; /* Учитываются все пробелы и переносы */ 
+			} 	
+				textarea {
+				resize: vertical;
+			}
+			.logbutton {
+				margin-right:5%
+			}
 		</style> 
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     </head>
     <body>
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 		<div id="post">
-			<a v-bind:href="serverName+'/main'"><img v-bind:src="serverName+'/index.jpg'"></a>
-			<div v-if="!user.key"><button v-on:click="login">Войти</button></div>
-			<div v-else="">{{user.login}}<button v-on:click="exit">Выйти</button></div>
-			<table>
-				<tr>
-					<td>
-						<a v-bind:href="serverName+'/user/'+post.userid"><p>{{post.userlogin}}</p></a>
-						<p>{{post.posttime.split('T')[1].slice(0,8)}}</p>
-						<p>{{post.posttime.split('T')[0]}}</p>
-						<template v-if="post.userid==user.id">
-							<p><button v-on:click="updatePost(post.postid)">Редактировать</button></p>
-							<p><button v-on:click="deletePost(post.postid)">Удалить</button></p>
-						</template>
-					</td>
-					<td>
-						<h3>{{post.name}}</h3>
-						<p><i>{{post.tags}}</i></p>
-						<p class="postbody">{{post.body}}</p>
-						<textarea v-model="post.body" placeholder="Введите комментарий"></textarea>
-					</td>
-				</tr>
-			</table>
-			<table>
-				<tr v-for="comment in comments">
-					<td>
-						<a v-bind:href="serverName+'/user/'+comment.userid"><p>{{comment.userlogin}}</p></a>
-						<p>{{comment.commenttime.split('T')[1].slice(0,8)}}</p>
-						<p>{{comment.commenttime.split('T')[0]}}</p>
-						<p v-if="post.userid==user.id"><button v-on:click="deleteComment(comment.commentid)">Удалить</button></p>
-					</td>
-					<td>
-						<p>{{comment.body}}</p>
-					</td>
-				</tr>
-			</table>
-			<form v-on:submit.prevent="comment" v-if="user.key">
-				<p>Оставить комментарий</p>
-				<textarea v-model="newmessage" placeholder="Введите комментарий"></textarea>
-				<button v-bind:disabled="!newmessage">Отправить</button>
-			</form>
+			<div class="text-center">
+				<a v-bind:href="serverName+'/main'"><img v-bind:src="serverName+'/index.jpg'"></a>
+			</div>
+			<div class=" text-right">
+				<div class="well">
+					<div class="row" v-if="!user.key">
+						<button v-on:click="login" class="btn btn-default logbutton">Войти</button>
+					</div>
+					<div class="row" v-else>
+						<a v-bind:href="serverName+'/user/'+user.id" class="lead">{{user.login}}</a>
+						<button v-on:click="exit" class="btn btn-default logbutton">Выйти</button>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">
+				</div>
+				<div class="panel panel-default col-md-8">
+					<div class="panel-body">
+						<div class="col-md-3">
+								<p style="margin-top:10%"><strong><a v-bind:href="serverName+'/user/'+post.userid">{{post.userlogin}}</a></strong></p>
+								<p><cite>{{post.posttime.split('T')[0]}}</cite></p>
+								<p><cite>{{post.posttime.split('T')[1].slice(0,5)}}</cite></p>
+								<template v-if="post.userid==user.id">
+									<p><button v-on:click="updatePost(post.postid)" class="btn btn-warning">
+										<span class="glyphicon glyphicon-pencil"></span>
+									</button>
+									<button v-on:click="deletePost(post.postid)" class="btn btn-danger">
+										<span class="glyphicon glyphicon-trash"></span>
+									</button>
+									</p>
+								</template>
+						</div>
+						<div class="panel panel-default col-md-9">
+							<div class="panel-heading">
+								<h3 class="panel-title"><strong>{{post.name}}</strong></h3>
+							</div>
+							<div class="panel-body">
+								<p>
+									<span v-for="tag in post.tags.split(' ')">
+										<span class="label label-info"><i>#{{tag}}</i></span>
+										<span> </span>
+									</span>
+								</p>
+								<p class="postbody">{{post.body}}</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-2">
+				</div>
+			</div>
+			<h3 class="text-center">Комментарии к посту</h3>
+			
+			<div class="row" v-for="comment in comments">
+				<div class="col-md-3">
+				</div>
+				<div class="panel panel-default col-md-6">
+					<div class="col-md-11" style="margin-top:20">
+						<blockquote>
+							<footer>
+							<strong><a v-bind:href="serverName+'/user/'+comment.userid">{{comment.userlogin}}</a></strong>
+							<cite> {{comment.commenttime.split('T')[0]}} {{comment.commenttime.split('T')[1].slice(0,5)}}</cite>
+							</footer>
+							<p class="postbody">{{comment.body}}</p>
+						</blockquote>	
+					</div>
+					<div class="col-md-1" style="margin-top:30">
+						<button v-on:click="deleteComment(comment.commentid)" class="btn btn-danger" v-if="post.userid==user.id">
+							<span class="glyphicon glyphicon-trash"></span>
+						</button>
+					</div>
+				</div>
+				<div class="col-md-3">
+				</div>
+			</div>
+
+			<div class="row" v-if="user.key">
+				<div class="col-md-3">
+				</div>
+				<div class="panel panel-default col-md-6">
+					<div class="panel-body">
+						<form class="form-horizontal" v-on:submit.prevent="comment">
+							<div class="form-group">
+								<label for="area" class="control-label">Оставить комментарий</label>
+								<textarea v-model="newmessage" id="area" placeholder="Введите комментарий" class="form-control" rows="5"></textarea>
+							</div>
+							<div class="form-group text-center">
+								<button v-bind:disabled="!newmessage" class="btn btn-success btn-lg">Отправить</button>
+							</div>
+						</form>
+					</div>
+				</div>
+				<div class="col-md-3">
+				</div>
+			</div>
 		</div>
 	
 	<script type="text/javascript">
@@ -68,7 +131,7 @@
 					name:'',
 					body:'',
 					tags:'',
-					posttime:'',
+					posttime:'0000T00:00:00.00',
 					userid:'',
 					userlogin: ''
 				},

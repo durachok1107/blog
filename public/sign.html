@@ -3,26 +3,54 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
         <title>Коллективный блог</title>
 		<style type="text/css">	
+			.coincide {
+				color:red
+			}
 		</style> 
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     </head>
     <body>
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 		<div id="sign">
-			<a v-bind:href="serverName+'/'"><img v-bind:src="serverName+'/index.jpg'"></a>
-			Регистрация
-			<form v-on:submit.prevent="sign">
-				<label for="login">Логин</label>
-				<input v-model="newUser.login" id="login" placeholder="Введите логин">
-				<label for="email">E-mail</label>
-				<input v-model="newUser.email" id="email" placeholder="Введите e-mail (необязательно)">
-				<label for="password">Пароль</label>
-				<input v-model="newUser.password" id="password" placeholder="Введите пароль">
-				<div v-show="coincide">Пароли не совпадают</div>
-				<label for="confirm">Пароль</label>
-				<input v-model="newUser.confirm" id="confirm" placeholder="Повторите пароль">
-				<button v-bind:disabled="!permission">Регистрация</button>
-			</form>
+			<div class="text-center">
+				<a v-bind:href="serverName+'/'"><img v-bind:src="serverName+'/index.jpg'"></a>
+			</div>
+			<div class="text-center">
+				<h1>Регистрация</h1>
+			</div>
+			<div class="container text-center">
+				<form v-on:submit.prevent="sign" class="form-horizontal">
+					<div class="form-group">
+						<label for="login" class="col-sm-4 control-label">Логин</label>	
+						<div class="col-sm-4">
+							<input v-model="newUser.login" class="form-control" id="login" placeholder="Введите логин">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="email" class="col-sm-4 control-label">E-mail</label>
+						<div class="col-sm-4">
+							<input type="email" v-model="newUser.email" class="form-control" id="email" placeholder="Введите e-mail (необязательно)">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="password" class="col-sm-4 control-label">Пароль</label>
+						<div class="col-sm-4">
+							<input type="password" v-model="newUser.password" class="form-control" id="password" placeholder="Введите пароль">
+							<u class="coincide" v-show="coincide">Пароли не совпадают</u>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="confirm" class="col-sm-4 control-label">Пароль</label>
+						<div class="col-sm-4">
+							<input type="password" v-model="newUser.confirm" class="form-control" id="confirm" placeholder="Повторите пароль">
+						</div>
+					</div>
+					<div class="form-group">
+						<button v-bind:disabled="!permission" class="btn btn-default btn-lg">Регистрация</button>
+					</div>
+				</form>
+			</div>
 		</div>
 	
 	<script type="text/javascript">

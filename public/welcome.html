@@ -4,25 +4,32 @@
         <title>Коллективный блог</title>
 		<style type="text/css">	
 		</style> 
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     </head>
     <body>
 	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
-		Добро пожаловать в коллективный блог
 		<div id="welcome">
-			<button v-on:click="login">Авторизация</button>
-			<button v-on:click="sign">Регистрация</button>
+			<div class="text-center">
+				<img v-bind:src="serverName+'/index.jpg'">
+			</div>
+			<div class="container text-center">
+				<button v-on:click="login" class="btn btn-default btn-lg">Авторизация</button>
+				<button v-on:click="sign" class="btn btn-default btn-lg">Регистрация</button>
+			</div>
 		</div>
 	
 	<script type="text/javascript">
-		var serverName='http://localhost:5000'
 		var vm = new Vue({
 			el: '#welcome',
+			data: {
+				serverName:'http://localhost:5000'
+			},
 			methods: {
 				login: function () {
-					document.location.href = serverName+'/login';
+					document.location.href = this.serverName+'/login';
 				},
 				sign: function () {
-					document.location.href = serverName+'/sign';
+					document.location.href = this.serverName+'/sign';
 				}
 			}
 		})

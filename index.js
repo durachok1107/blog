@@ -18,42 +18,6 @@ var rollback = function(client) {
   });
 };
 
-
-//"create table blog_user (user_id serial, user_login text, user_email text, user_password text, user_key text, user_signtime timestamp);"
-//"create table blog_post (post_id serial, user_id integer, post_name text, post_body text, post_tags text, post_createtime timestamp);"
-//"create table blog_comment (comment_id serial, user_id integer, post_id integer, comment_body text, comment_createtime timestamp);"
-
-/*pool.query("insert into blog_user (user_login, user_email, user_password, user_key, user_signtime) values ('test','','test','12345',CURRENT_TIMESTAMP);", (err, res) => {
-  done();
-  if (err) throw err;
-  console.log(JSON.stringify(res));
-  pool.end();
-});*/
-
-/*pool.query("select * from blog_user;", (err, res) => {
-	if (err) return rollback(pool);
-  for (let row of res.rows) {
-    console.log(JSON.stringify(row));
-  }
-  console.log('**'+JSON.stringify(res.rows));
-});
-*//*
-axios.get('https://yesno.wtf/api')
-        .then(function (response) {
-          vm.answer = _.capitalize(response.data.answer)
-        })
-        .catch(function (error) {
-          vm.answer = 'Ошибка! Не могу связаться с API. ' + error
-        })
-		
-		axios.get(serverName+'/sign')
-						.then(function (response) {
-							alert('Ошибка! ' + response);
-						})
-						.catch(function (error) {
-							alert('Ошибка! ' + error);
-						})
-		*/
 var app = express();
 var jsonParser = bodyParser.json();
 
@@ -287,20 +251,5 @@ app.post("/updatepost/", jsonParser, function (req, res) {
 		}
 	});
 });
-
-
-
-/*
-pool.query("delete from blog_user where user_id between 6 and 10;", (err, res) => {
-	if (err) return rollback(pool);
-  console.log('**'+JSON.stringify(res.rows));
-})
-*//*
-pool.query("select * from blog_user;", (err, res) => {
-	if (err) return rollback(pool);
-  for (let row of res.rows) {
-    console.log(JSON.stringify(row));
-  }
-})*/
 
 app.listen(5000, () => console.log(`Listening on 5000`));
