@@ -36,7 +36,7 @@ app.get("/sign", (req, res) => res.sendFile(__dirname + "/public/sign.html"));
 
 app.post("/signup/", jsonParser, function (req, res) {
     if (!req.body) return res.sendStatus(400);
-	pool.query("select count(*) from blog_user where user_login ='"+req.body.login+"' or (user_email!='' and user_email='"+req.body.email+"');", (error, result) => {
+	pool.query("select count(*) from blog_user where user_login ='"+req.body.login.replace(/'/g,"\'")+"' or (user_email!='' and user_email='"+req.body.email.replace(/'/g,"\'")+"');", (error, result) => {
 		if (error) return rollback(pool);
 		if(result.rows[0].count>0)
 		{
@@ -44,7 +44,7 @@ app.post("/signup/", jsonParser, function (req, res) {
 		}
 		else
 		{
-			pool.query("insert into blog_user (user_login, user_email, user_password, user_key, user_signtime) values ('"+req.body.login+"','"+req.body.email+"','"+req.body.password+"','',CURRENT_TIMESTAMP) ;", (error, result) => {
+			pool.query("insert into blog_user (user_login, user_email, user_password, user_key, user_signtime) values ('"+req.body.login.replace(/'/g,"\'")+"','"+req.body.email.replace(/'/g,"\'")+"','"+req.body.password.replace(/'/g,"\'")+"','',CURRENT_TIMESTAMP) ;", (error, result) => {
 				if (error) return rollback(pool);
 				res.send('0');
 			});
@@ -56,7 +56,7 @@ app.get("/login", (req, res) => res.sendFile(__dirname + "/public/login.html"));
 
 app.post("/getin/", jsonParser, function (req, res) {
     if (!req.body) return res.sendStatus(400);
-	pool.query("select user_id from blog_user where (user_login ='"+req.body.login+"' or (user_email!='' and user_email='"+req.body.login+"')) and user_password='"+req.body.password+"';", (error, result) => {
+	pool.query("select user_id from blog_user where (user_login ='"+req.body.login.replace(/'/g,"\'")+"' or (user_email!='' and user_email='"+req.body.login.replace(/'/g,"\'")+"')) and user_password='"+req.body.password.replace(/'/g,"\'")+"';", (error, result) => {
 		if (error) return rollback(pool);
 		if(result.rows.length>0)
 		{
@@ -135,7 +135,7 @@ app.post("/savecomment/", jsonParser, function (req, res) {
 		if(result.rows.length>0)
 		{
 			var user_id=result.rows[0].user_id;
-			pool.query("insert into blog_comment (user_id, post_id, comment_body, comment_createtime) values ("+user_id+",'"+req.body.postid+"','"+req.body.body+"',CURRENT_TIMESTAMP);", (error, result) => {
+			pool.query("insert into blog_comment (user_id, post_id, comment_body, comment_createtime) values ("+user_id+",'"+req.body.postid+"','"+req.body.body.replace(/'/g,"\'")+"',CURRENT_TIMESTAMP);", (error, result) => {
 				if (error) return rollback(pool);
 				res.send('0');
 			});
@@ -198,7 +198,7 @@ app.post("/savepost/", jsonParser, function (req, res) {
 		if(result.rows.length>0)
 		{
 			var user_id=result.rows[0].user_id;
-			pool.query("insert into blog_post (user_id, post_name, post_body, post_tags, post_createtime) values ("+user_id+",'"+req.body.name+"','"+req.body.body+"','"+req.body.tags+"',CURRENT_TIMESTAMP);", (error, result) => {
+			pool.query("insert into blog_post (user_id, post_name, post_body, post_tags, post_createtime) values ("+user_id+",'"+req.body.name.replace(/'/g,"\'")+"','"+req.body.body.replace(/'/g,"\'")+"','"+req.body.tags.replace(/'/g,"\'")+"',CURRENT_TIMESTAMP);", (error, result) => {
 				if (error) return rollback(pool);
 				res.send('0');
 			});
@@ -242,7 +242,7 @@ app.post("/updatepost/", jsonParser, function (req, res) {
 		if(result.rows.length>0)
 		{
 			var user_id=result.rows[0].user_id;
-			pool.query("update blog_post set post_name='"+req.body.name+"', post_tags= '"+req.body.tags+"', post_body= '"+req.body.body+"' where post_id="+req.body.postid+" and post_id in (select post_id from blog_post where user_id="+user_id+");", (error, result) => {
+			pool.query("update blog_post set post_name='"+req.body.name.replace(/'/g,"\'")+"', post_tags= '"+req.body.tags.replace(/'/g,"\'")+"', post_body= '"+req.body.body.replace(/'/g,"\'")+"' where post_id="+req.body.postid+" and post_id in (select post_id from blog_post where user_id="+user_id+");", (error, result) => {
 				if (error) return rollback(pool);
 				res.send('0');
 			});
